@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 08, 2025 at 01:18 AM
+-- Generation Time: May 08, 2025 at 03:47 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -42,7 +42,8 @@ INSERT INTO `tblbeneficiary` (`beneficiary_id`, `uid`, `address`) VALUES
 (4, 17, '456 Relief Ave, Cebu'),
 (5, 20, '789 Bayanihan Rd, Davao'),
 (6, 24, '321 Hope Blvd, Baguio'),
-(7, 29, 'Talisay City');
+(7, 29, 'Talisay City'),
+(8, 32, 'Secret, Mo adto pa nya ka');
 
 -- --------------------------------------------------------
 
@@ -53,19 +54,26 @@ INSERT INTO `tblbeneficiary` (`beneficiary_id`, `uid`, `address`) VALUES
 CREATE TABLE `tbldonator` (
   `donator_id` int(11) NOT NULL,
   `uid` int(11) NOT NULL,
-  `organization` varchar(100) NOT NULL
+  `organization` varchar(100) NOT NULL,
+  `amount` double DEFAULT NULL,
+  `donation_type` enum('Cash','Goods','Medicine','Supplies') DEFAULT 'Cash'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tbldonator`
 --
 
-INSERT INTO `tbldonator` (`donator_id`, `uid`, `organization`) VALUES
-(2, 14, ''),
-(3, 16, ''),
-(4, 19, ''),
-(5, 21, ''),
-(6, 23, '');
+INSERT INTO `tbldonator` (`donator_id`, `uid`, `organization`, `amount`, `donation_type`) VALUES
+(1, 14, 'Hope Foundation', 5000, 'Cash'),
+(2, 15, 'Save Lives Org', 3000, 'Goods'),
+(3, 16, 'Helping Hands', 1500, 'Medicine'),
+(4, 17, 'Community Aid', 2000, 'Supplies'),
+(5, 18, 'Health for All', 4000, 'Cash'),
+(6, 19, 'Relief Team', 2500, 'Goods'),
+(7, 20, 'Charity for Children', 3500, 'Supplies'),
+(8, 21, 'Benevolent Hearts', 6000, 'Cash'),
+(9, 33, 'Secret', NULL, 'Cash'),
+(10, 34, 'hgfds', NULL, 'Cash');
 
 -- --------------------------------------------------------
 
@@ -87,7 +95,9 @@ INSERT INTO `tblemployee` (`employee_id`, `salary`, `uid`) VALUES
 (4, 40000, 15),
 (5, 42000, 18),
 (6, 38000, 22),
-(10, 100000, 28);
+(10, 100000, 28),
+(11, 99987, 30),
+(12, 87654, 31);
 
 -- --------------------------------------------------------
 
@@ -126,7 +136,12 @@ INSERT INTO `tbluser` (`uid`, `fname`, `lname`, `password`, `is_employee`, `is_b
 (23, 'Marco', 'Villanueva', 'c07f92f7d674d0470cb2c631f70c25022e0b52e747b2b67120504d9a54f1a4bb', 0, 0, 1, 'marco_v', '2025-05-06', '2025-05-06'),
 (24, 'Nina', 'Ramos', '09e10ba28dcebef4afe87ebdf88945c11593f54b06070acee21c22cea1977aec', 0, 1, 0, 'nina_r', '2025-05-06', '2025-05-06'),
 (28, 'harley', 'reyes', '$2y$10$04A92Z6j2fAcUZydbsb4YO16LcLKJZb6a0ADlXz8CFC4wpZnpXIGi', 1, 0, 0, 'harley', '2025-05-07', '2025-05-07'),
-(29, 'earl', 'echavez', '$2y$10$zT1msYFaj8ap9puIht0.BePXBB046Wla90a63mSSLY5Czr14.uWFW', 0, 1, 0, 'earl', '2025-05-07', '2025-05-07');
+(29, 'earl', 'echavez', '$2y$10$zT1msYFaj8ap9puIht0.BePXBB046Wla90a63mSSLY5Czr14.uWFW', 0, 1, 0, 'earl', '2025-05-07', '2025-05-07'),
+(30, 'kjhfds', 'uyufg', '$2y$10$hA78j5qI/lJe/k5GTYEt3u3c9U0IWEb0qcZWFJUZkIjvMIiKR5Udm', 1, 0, 0, 'ggdfsfsfd', '2025-05-08', '2025-05-08'),
+(31, 'Me', 'Me', '$2y$10$FWYVWMudTmDZW0hrJdFgr.K7xSU.vDokmiVyVSMd6Qweh3tr98pEe', 1, 0, 0, 'Meme', '2025-05-08', '2025-05-08'),
+(32, 'Haha', 'Haha', '$2y$10$aOy5WLORw0he1JaxYERNwOef.wRzAW9VPBR.sMx1ybvD3czXGz5uW', 0, 1, 0, 'Ehe', '2025-05-08', '2025-05-08'),
+(33, 'John', 'Ode', '$2y$10$IGLN.TJgwJhOa18fcu7koubiGXVXRNy3VkshVkJN.eMOOJXXuzInq', 0, 0, 1, 'Lol', '2025-05-08', '2025-05-08'),
+(34, 'ramil', 'gfd', '$2y$10$EQVVf.FCEd8z6p22P0veJ.dn9D4V54n2QCZWXAzlWDWOE71P6xnRK', 0, 0, 1, 'Eheg', '2025-05-08', '2025-05-08');
 
 --
 -- Indexes for dumped tables
@@ -167,25 +182,25 @@ ALTER TABLE `tbluser`
 -- AUTO_INCREMENT for table `tblbeneficiary`
 --
 ALTER TABLE `tblbeneficiary`
-  MODIFY `beneficiary_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `beneficiary_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `tbldonator`
 --
 ALTER TABLE `tbldonator`
-  MODIFY `donator_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `donator_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `tblemployee`
 --
 ALTER TABLE `tblemployee`
-  MODIFY `employee_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `employee_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `tbluser`
 --
 ALTER TABLE `tbluser`
-  MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- Constraints for dumped tables
