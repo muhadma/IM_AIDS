@@ -10,12 +10,38 @@ require_once 'includes/header.php';
 
 $uid = $_SESSION['uid'];
 
-// Dummy data for now (replace with actual database query later)
-$donations = [
-    ['amount' => 1000, 'type' => 'Financial Aid', 'date' => '2025-05-01', 'donor' => 'John Doe'],
-    ['amount' => 500, 'type' => 'Food Supplies', 'date' => '2025-04-28', 'donor' => 'Maria Santos'],
-    ['amount' => 750, 'type' => 'Medical Support', 'date' => '2025-04-15', 'donor' => 'Anonymous']
-];
+// Query to get the donations received by the current user
+$sql = "
+    SELECT 
+        r.donator_id, 
+        d.donation_type, 
+        d.amount, 
+        u.fname, 
+        u.lname
+    FROM 
+        tblrecieved r
+    JOIN 
+        tbldonator d ON r.donator_id = d.donator_id
+    JOIN 
+        tbluser u ON d.donator_id = u.uid
+    WHERE 
+        r.uid = ?";
+
+$stmt = $connection->prepare($sql);
+$stmt->bind_param("i", $uid);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Fetch the donation data
+$donations = [];
+while ($row = $result->fetch_assoc()) {
+    $donations[] = [
+        'amount' => $row['amount'],
+        'type' => $row['donation_type'],
+        'date' => date('Y-m-d'),  // Use current date
+        'donor' => $row['fname'] . ' ' . $row['lname']
+    ];
+}
 ?>
 
 <link rel="stylesheet" href="css/register.css">
@@ -103,14 +129,20 @@ $donations = [
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($donations as $donation): ?>
-            <tr>
-                <td><?= htmlspecialchars($donation['donor']) ?></td>
-                <td><?= htmlspecialchars($donation['type']) ?></td>
-                <td>₱<?= number_format($donation['amount'], 2) ?></td>
-                <td><?= htmlspecialchars($donation['date']) ?></td>
-            </tr>
-            <?php endforeach; ?>
+            <?php if (count($donations) > 0): ?>
+                <?php foreach ($donations as $donation): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($donation['donor']) ?></td>
+                        <td><?= htmlspecialchars($donation['type']) ?></td>
+                        <td>₱<?= number_format($donation['amount'], 2) ?></td>
+                        <td><?= htmlspecialchars($donation['date']) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="4" style="text-align: center;">No donations received.</td>
+                </tr>
+            <?php endif; ?>
         </tbody>
     </table>
 </div>

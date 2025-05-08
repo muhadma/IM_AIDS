@@ -10,15 +10,18 @@ require_once 'includes/header.php';
 
 $uid = $_SESSION['uid'];
 
-// Fetch donations received from the database
-$stmt = $connection->prepare("SELECT donation_type, amount FROM tbldonator WHERE uid = ?");
+// Only fetch donations with amount > 0
+$stmt = $connection->prepare("SELECT donation_type, amount FROM tbldonator WHERE uid = ? AND amount > 0");
 $stmt->bind_param("i", $uid);
 $stmt->execute();
 $result = $stmt->get_result();
 
 $donations = [];
+$totalAmount = 0;
+
 while ($row = $result->fetch_assoc()) {
     $donations[] = $row;
+    $totalAmount += $row['amount'];
 }
 
 $stmt->close();
@@ -64,6 +67,11 @@ $stmt->close();
         background-color: #f9f9f9;
     }
 
+    .total-row td {
+        font-weight: bold;
+        background-color: #f1f1f1;
+    }
+
     .nav-container {
         background-color: #2a2f6f;
         padding: 15px;
@@ -89,14 +97,14 @@ $stmt->close();
 <div class="nav-container">
     <nav>
         <a href="home_donator.php">Home</a>
-        <a href="sent_donations.php">Donations Received</a>
+        <a href="sent_donations.php">Donations Sent</a>
         <a href="profile.php">My Profile</a>
         <a href="index.php">Logout</a>
     </nav>
 </div>
 
 <div class="donation-container">
-    <h2>Donations Received</h2>
+    <h2>My Donations</h2>
 
     <table class="donation-table">
         <thead>
@@ -108,13 +116,19 @@ $stmt->close();
         <tbody>
             <?php if (count($donations) > 0): ?>
                 <?php foreach ($donations as $donation): ?>
-                <tr>
-                    <td><?= htmlspecialchars($donation['donation_type']) ?></td>
-                    <td>₱<?= number_format($donation['amount'], 2) ?></td>
-                </tr>
+                    <tr>
+                        <td><?= htmlspecialchars($donation['donation_type']) ?></td>
+                        <td>₱<?= number_format($donation['amount'], 2) ?></td>
+                    </tr>
                 <?php endforeach; ?>
+                <tr class="total-row">
+                    <td>Total</td>
+                    <td>₱<?= number_format($totalAmount, 2) ?></td>
+                </tr>
             <?php else: ?>
-                <tr><td colspan="2">No donations received.</td></tr>
+                <tr>
+                    <td colspan="2" style="text-align:center; font-style:italic;">No donations yet.</td>
+                </tr>
             <?php endif; ?>
         </tbody>
     </table>

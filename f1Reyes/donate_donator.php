@@ -1,11 +1,41 @@
 <?php
 session_start();
+
 if (!isset($_SESSION['uid'])) {
     header("Location: login.php");
     exit();
 }
 
-require_once 'includes/header.php';
+// Direct DB connection
+$host = "localhost";
+$user = "root";
+$pass = "";
+$dbname = "dbf1Reyes";
+
+$conn = new mysqli($host, $user, $pass, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $uid = $_SESSION['uid'];
+    $donation_type = trim($_POST['donation_type']);
+    $amount = trim($_POST['amount']);
+
+    $stmt = $conn->prepare("INSERT INTO tbldonator (uid, donation_type, amount) VALUES (?, ?, ?)");
+    $stmt->bind_param("iss", $uid, $donation_type, $amount);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Donation submitted successfully!'); window.location.href='home_donator.php';</script>";
+    } else {
+        echo "<script>alert('Error submitting donation.'); window.location.href='home_donator.php';</script>";
+    }
+
+    $stmt->close();
+    $conn->close();
+    exit();
+}
 ?>
 
 <link rel="stylesheet" href="css/register.css">
@@ -97,17 +127,13 @@ require_once 'includes/header.php';
             <option value="">Select</option>
             <option value="cash">Cash</option>
             <option value="goods">Goods</option>
-            <option value="services">Medicine</option>
+            <option value="services">Services</option>
+            <option value="medicine">Medicine</option>
         </select>
 
         <label for="amount">Amount / Description</label>
         <input type="text" id="amount" name="amount" placeholder="Enter amount or description..." required>
 
-        <label for="message">Message (optional)</label>
-        <input type="text" id="message" name="message" placeholder="Leave a note...">
-
         <button type="submit">Submit Donation</button>
     </form>
 </div>
-
-<?php require_once 'includes/footer.php'; ?>

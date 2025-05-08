@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 08, 2025 at 03:47 AM
+-- Generation Time: May 08, 2025 at 01:28 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -43,7 +43,8 @@ INSERT INTO `tblbeneficiary` (`beneficiary_id`, `uid`, `address`) VALUES
 (5, 20, '789 Bayanihan Rd, Davao'),
 (6, 24, '321 Hope Blvd, Baguio'),
 (7, 29, 'Talisay City'),
-(8, 32, 'Secret, Mo adto pa nya ka');
+(8, 32, 'Secret, Mo adto pa nya ka'),
+(9, 37, 'Secret, Mo adto pa nya ka');
 
 -- --------------------------------------------------------
 
@@ -73,7 +74,12 @@ INSERT INTO `tbldonator` (`donator_id`, `uid`, `organization`, `amount`, `donati
 (7, 20, 'Charity for Children', 3500, 'Supplies'),
 (8, 21, 'Benevolent Hearts', 6000, 'Cash'),
 (9, 33, 'Secret', NULL, 'Cash'),
-(10, 34, 'hgfds', NULL, 'Cash');
+(10, 34, 'hgfds', NULL, 'Cash'),
+(11, 35, 'Jeje', NULL, 'Cash'),
+(12, 35, '', 56700, 'Cash'),
+(13, 36, 'gfd', NULL, 'Cash'),
+(14, 36, '', 23000, ''),
+(15, 36, '', 2000, 'Medicine');
 
 -- --------------------------------------------------------
 
@@ -98,6 +104,35 @@ INSERT INTO `tblemployee` (`employee_id`, `salary`, `uid`) VALUES
 (10, 100000, 28),
 (11, 99987, 30),
 (12, 87654, 31);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tblrecieved`
+--
+
+CREATE TABLE `tblrecieved` (
+  `rid` int(11) NOT NULL,
+  `uid` int(11) NOT NULL,
+  `donator_id` int(11) NOT NULL,
+  `urgency` int(11) DEFAULT NULL
+) ;
+
+--
+-- Dumping data for table `tblrecieved`
+--
+
+INSERT INTO `tblrecieved` (`rid`, `uid`, `donator_id`, `urgency`) VALUES
+(1, 37, 1, NULL),
+(2, 37, 5, NULL),
+(3, 37, 8, NULL),
+(4, 37, 9, NULL),
+(5, 37, 10, NULL),
+(6, 37, 11, NULL),
+(7, 37, 12, NULL),
+(8, 37, 13, NULL),
+(9, 37, 3, NULL),
+(10, 37, 15, NULL);
 
 -- --------------------------------------------------------
 
@@ -141,7 +176,10 @@ INSERT INTO `tbluser` (`uid`, `fname`, `lname`, `password`, `is_employee`, `is_b
 (31, 'Me', 'Me', '$2y$10$FWYVWMudTmDZW0hrJdFgr.K7xSU.vDokmiVyVSMd6Qweh3tr98pEe', 1, 0, 0, 'Meme', '2025-05-08', '2025-05-08'),
 (32, 'Haha', 'Haha', '$2y$10$aOy5WLORw0he1JaxYERNwOef.wRzAW9VPBR.sMx1ybvD3czXGz5uW', 0, 1, 0, 'Ehe', '2025-05-08', '2025-05-08'),
 (33, 'John', 'Ode', '$2y$10$IGLN.TJgwJhOa18fcu7koubiGXVXRNy3VkshVkJN.eMOOJXXuzInq', 0, 0, 1, 'Lol', '2025-05-08', '2025-05-08'),
-(34, 'ramil', 'gfd', '$2y$10$EQVVf.FCEd8z6p22P0veJ.dn9D4V54n2QCZWXAzlWDWOE71P6xnRK', 0, 0, 1, 'Eheg', '2025-05-08', '2025-05-08');
+(34, 'ramil', 'gfd', '$2y$10$EQVVf.FCEd8z6p22P0veJ.dn9D4V54n2QCZWXAzlWDWOE71P6xnRK', 0, 0, 1, 'Eheg', '2025-05-08', '2025-05-08'),
+(35, 'Peter', 'Pan', '$2y$10$7n2YYY3WS8Yu5OxpdjQImuLYWCBeXU8vWaf7pGLseT2DwY951hjkC', 0, 0, 1, 'Peter', '2025-05-08', '2025-05-08'),
+(36, 'julian', 'ands', '$2y$10$z7owPeTSj9.G1nPy.TstUeLNKQUJWjEVeHPeZyEYQeSRO.iXCs2oa', 0, 0, 1, 'juls', '2025-05-08', '2025-05-08'),
+(37, 'Mike', 'Rama', '$2y$10$Z08vhKp4eK9Zgk/AsuBsj.BZgTmLoLwO32Vu7SRfxfdKlWAmSHi4i', 0, 1, 0, 'Tehee', '2025-05-08', '2025-05-08');
 
 --
 -- Indexes for dumped tables
@@ -169,6 +207,12 @@ ALTER TABLE `tblemployee`
   ADD KEY `uid` (`uid`);
 
 --
+-- Indexes for table `tblrecieved`
+--
+ALTER TABLE `tblrecieved`
+  ADD PRIMARY KEY (`rid`);
+
+--
 -- Indexes for table `tbluser`
 --
 ALTER TABLE `tbluser`
@@ -182,13 +226,13 @@ ALTER TABLE `tbluser`
 -- AUTO_INCREMENT for table `tblbeneficiary`
 --
 ALTER TABLE `tblbeneficiary`
-  MODIFY `beneficiary_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `beneficiary_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `tbldonator`
 --
 ALTER TABLE `tbldonator`
-  MODIFY `donator_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `donator_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `tblemployee`
@@ -197,10 +241,16 @@ ALTER TABLE `tblemployee`
   MODIFY `employee_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
+-- AUTO_INCREMENT for table `tblrecieved`
+--
+ALTER TABLE `tblrecieved`
+  MODIFY `rid` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `tbluser`
 --
 ALTER TABLE `tbluser`
-  MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- Constraints for dumped tables
