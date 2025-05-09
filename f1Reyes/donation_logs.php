@@ -8,12 +8,32 @@ if (!isset($_SESSION['uid'])) {
 require_once 'connect.php';
 require_once 'includes/header.php';
 
-// Sample data for visual display (replace with real DB fetch)
-$donation_logs = [
-    ['donor' => 'John Doe', 'recipient' => 'Anna Cruz', 'type' => 'Cash', 'amount' => 1000, 'date' => '2025-05-01'],
-    ['donor' => 'Maria Santos', 'recipient' => 'Carlos Reyes', 'type' => 'Goods', 'amount' => 500, 'date' => '2025-04-28'],
-    ['donor' => 'Anonymous', 'recipient' => 'Liza Ramos', 'type' => 'Medicine', 'amount' => 800, 'date' => '2025-04-25'],
-];
+$fname = isset($_POST['fname']) ? $_POST['fname'] : '';
+$lname = isset($_POST['lname']) ? $_POST['lname'] : '';
+$donation_type = isset($_POST['donation_type']) ? $_POST['donation_type'] : '';
+$amount = isset($_POST['amount']) ? $_POST['amount'] : '';
+$organization = isset($_POST['organization']) ? $_POST['organization'] : '';
+
+$filter_conditions = [];
+if ($fname) $filter_conditions[] = "u.fname LIKE '%$fname%'";
+if ($lname) $filter_conditions[] = "u.lname LIKE '%$lname%'";
+if ($donation_type) $filter_conditions[] = "d.donation_type LIKE '%$donation_type%'";
+if ($amount) $filter_conditions[] = "d.amount LIKE '%$amount%'";
+if ($organization) $filter_conditions[] = "d.organization LIKE '%$organization%'";
+
+$filter_sql = $filter_conditions ? 'WHERE ' . implode(' AND ', $filter_conditions) : '';
+
+$donation_query = "SELECT u.fname AS donor_fname, u.lname AS donor_lname, d.organization, d.amount, d.donation_type
+                   FROM tbluser u
+                   JOIN tbldonator d ON u.uid = d.uid
+                   $filter_sql
+                   ORDER BY u.lname";
+$donation_result = $connection->query($donation_query);
+
+$total_query = "SELECT SUM(amount) AS total_amount FROM tbldonator";
+$total_result = $connection->query($total_query);
+$total_row = $total_result->fetch_assoc();
+$total_amount = $total_row['total_amount'] ?? 0;
 ?>
 
 <link rel="stylesheet" href="css/register.css">
@@ -31,7 +51,34 @@ $donation_logs = [
     .log-container h2 {
         text-align: center;
         color: #2a2f6f;
-        margin-bottom: 25px;
+        margin-bottom: 15px;
+    }
+
+    .filter-form {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .filter-form input {
+        padding: 8px;
+        margin: 5px;
+        width: 180px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .filter-form button {
+        padding: 10px 20px;
+        background-color: #2a2f6f;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .filter-form button:hover {
+        background-color: #1f245a;
     }
 
     .log-table {
@@ -89,26 +136,45 @@ $donation_logs = [
 
 <div class="log-container">
     <h2>Donation Logs</h2>
+
+    <div style="text-align: left; margin-bottom: 20px;">
+        <strong>Total donation received:</strong> ₱<?= number_format($total_amount, 2) ?>
+    </div>
+
+    <form class="filter-form" method="POST" action="">
+        <input type="text" name="fname" placeholder="Donor First Name" value="<?= htmlspecialchars($fname) ?>">
+        <input type="text" name="lname" placeholder="Donor Last Name" value="<?= htmlspecialchars($lname) ?>">
+        <input type="text" name="donation_type" placeholder="Donation Type" value="<?= htmlspecialchars($donation_type) ?>">
+        <input type="number" name="amount" placeholder="Amount" step="0.01" value="<?= htmlspecialchars($amount) ?>">
+        <input type="text" name="organization" placeholder="Organization" value="<?= htmlspecialchars($organization) ?>">
+        <br>
+        <button type="submit">Filter</button>
+    </form>
+
     <table class="log-table">
         <thead>
             <tr>
                 <th>Donor</th>
-                <th>Recipient</th>
+                <th>Organization</th>
                 <th>Donation Type</th>
                 <th>Amount/Value</th>
-                <th>Date</th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($donation_logs as $log): ?>
-            <tr>
-                <td><?= htmlspecialchars($log['donor']) ?></td>
-                <td><?= htmlspecialchars($log['recipient']) ?></td>
-                <td><?= htmlspecialchars($log['type']) ?></td>
-                <td>₱<?= number_format($log['amount'], 2) ?></td>
-                <td><?= htmlspecialchars($log['date']) ?></td>
-            </tr>
-            <?php endforeach; ?>
+            <?php
+            if ($donation_result->num_rows > 0) {
+                while ($log = $donation_result->fetch_assoc()) {
+                    echo "<tr>
+                            <td>" . htmlspecialchars($log['donor_fname']) . " " . htmlspecialchars($log['donor_lname']) . "</td>
+                            <td>" . htmlspecialchars($log['organization']) . "</td>
+                            <td>" . htmlspecialchars($log['donation_type']) . "</td>
+                            <td>₱" . number_format($log['amount'], 2) . "</td>
+                          </tr>";
+                }
+            } else {
+                echo "<tr><td colspan='4'>No donation logs found</td></tr>";
+            }
+            ?>
         </tbody>
     </table>
 </div>

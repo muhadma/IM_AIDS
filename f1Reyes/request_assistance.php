@@ -5,7 +5,57 @@ if (!isset($_SESSION['uid'])) {
     exit();
 }
 
-require_once 'includes/header.php';
+$connection = new mysqli('localhost', 'root', '', 'dbf1Reyes');
+
+if (!$connection) {
+    die("Connection failed: " . mysqli_error($connection));
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $assistance_type = $_POST['assistance_type'];
+    $urgency = $_POST['urgency'];
+    $description = $_POST['description'];
+    $uid = $_SESSION['uid']; 
+
+    $donation_type = '';
+    switch ($assistance_type) {
+        case 'financial':
+            $donation_type = 'Cash';
+            break;
+        case 'medical':
+            $donation_type = 'Medicine';
+            break;
+        case 'food':
+            $donation_type = 'Goods';
+            break;
+        case 'housing':
+            $donation_type = 'Cash';
+            break;
+        case 'others':
+            $donation_type = 'Cash';
+            break;
+    }
+
+    $sql = "SELECT donator_id FROM tbldonator WHERE donation_type = ?";
+    $stmt = $connection->prepare($sql);
+    $stmt->bind_param("s", $donation_type);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $donator_id = $row['donator_id'];
+            $insert_sql = "INSERT INTO tblrecieved (uid, donator_id) VALUES (?, ?)";
+            $insert_stmt = $connection->prepare($insert_sql);
+            $insert_stmt->bind_param("ii", $uid, $donator_id);
+            $insert_stmt->execute();
+        }
+
+        echo "Request has been successfully submitted.";
+    } else {
+        echo "No donators found with the matching donation type.";
+    }
+}
 ?>
 
 <link rel="stylesheet" href="css/register.css">

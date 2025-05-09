@@ -53,7 +53,7 @@ if (isset($_POST['btnLogin'])) {
                 header("Location: home_beneficiary.php");
             } elseif ($row['is_donator']) {
                 $_SESSION['usertype'] = 'donator';
-                header("Location: home_beneficiary.php"); // same page as beneficiary if they share the interface
+                header("Location: home_donator.php"); // same page as beneficiary if they share the interface
             } else {
                 echo "<script>alert('User has no valid role assigned.');</script>";
             }
