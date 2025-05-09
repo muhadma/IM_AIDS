@@ -6,7 +6,6 @@ if (!isset($_SESSION['uid'])) {
     exit();
 }
 
-// Direct DB connection
 $host = "localhost";
 $user = "root";
 $pass = "";

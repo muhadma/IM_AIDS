@@ -10,7 +10,6 @@ require_once 'includes/header.php';
 
 $uid = $_SESSION['uid'];
 
-// Query to get the donations received by the current user
 $sql = "
     SELECT 
         r.donator_id, 
@@ -32,13 +31,12 @@ $stmt->bind_param("i", $uid);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Fetch the donation data
 $donations = [];
 while ($row = $result->fetch_assoc()) {
     $donations[] = [
         'amount' => $row['amount'],
         'type' => $row['donation_type'],
-        'date' => date('Y-m-d'),  // Use current date
+        'date' => date('Y-m-d'), 
         'donor' => $row['fname'] . ' ' . $row['lname']
     ];
 }

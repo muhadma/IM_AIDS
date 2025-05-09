@@ -10,7 +10,6 @@ require_once 'includes/header.php';
 
 $uid = $_SESSION['uid'];
 
-// Only fetch donations with amount > 0
 $stmt = $connection->prepare("SELECT donation_type, amount FROM tbldonator WHERE uid = ? AND amount > 0");
 $stmt->bind_param("i", $uid);
 $stmt->execute();

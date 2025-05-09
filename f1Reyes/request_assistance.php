@@ -5,10 +5,8 @@ if (!isset($_SESSION['uid'])) {
     exit();
 }
 
-// Database connection using mysqli
 $connection = new mysqli('localhost', 'root', '', 'dbf1Reyes');
 
-// Check connection
 if (!$connection) {
     die("Connection failed: " . mysqli_error($connection));
 }
@@ -17,9 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $assistance_type = $_POST['assistance_type'];
     $urgency = $_POST['urgency'];
     $description = $_POST['description'];
-    $uid = $_SESSION['uid'];  // The logged-in user
+    $uid = $_SESSION['uid']; 
 
-    // Match the assistance type with the corresponding donation type
     $donation_type = '';
     switch ($assistance_type) {
         case 'financial':
@@ -39,16 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
     }
 
-    // Query to get donators with matching donation_type
     $sql = "SELECT donator_id FROM tbldonator WHERE donation_type = ?";
     $stmt = $connection->prepare($sql);
     $stmt->bind_param("s", $donation_type);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Check if any donators match the donation type
     if ($result->num_rows > 0) {
-        // Insert into tblrecieved for each donator
         while ($row = $result->fetch_assoc()) {
             $donator_id = $row['donator_id'];
             $insert_sql = "INSERT INTO tblrecieved (uid, donator_id) VALUES (?, ?)";
